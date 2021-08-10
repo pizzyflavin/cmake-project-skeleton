@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Embedded Artistry LLC.
+ * Copyright © YEAR ORGANIZATION
  * License: MIT. See LICENSE file for details.
  */
 

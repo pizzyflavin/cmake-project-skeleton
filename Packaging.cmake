@@ -4,7 +4,7 @@
 
 ### General Configuration ###
 
-set(CPACK_PACKAGE_VENDOR "Embedded Artistry")
+set(CPACK_PACKAGE_VENDOR "ORGANIZATION")
 set(CPACK_GENERATOR "ZIP;TBZ2")
 set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
 
