@@ -1,0 +1,21 @@
+#################
+# STM32F103VBIx #
+#################
+if(STM32F103VBIx_TOOLCHAIN_INCLUDED)
+    return()
+endif()
+
+set(CPU_NAME STM32F103VBIx)
+
+set(LINKER_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/cmake/linker-scripts/stm)
+set(LINKER_SCRIPT_PRIMARY_FILE STM32F103VBIx_FLASH.ld)
+set(LD_FLAGS "-T${LINKER_SCRIPT_PRIMARY_FILE} -L${LINKER_SCRIPT_DIR}")
+
+list(APPEND LINKER_SCRIPT_DEPENDENCIES
+    "${LINKER_SCRIPT_DIR}/${LINKER_SCRIPT_PRIMARY_FILE}")
+
+# Include arm cortex-m3 base file
+include(${CMAKE_CURRENT_LIST_DIR}/cortex-m3.cmake)
+
+set(STM32F103VBIx_TOOLCHAIN_INCLUDED true)
+
