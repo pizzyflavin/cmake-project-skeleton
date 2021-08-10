@@ -1,2 +1,40 @@
+# macOS files
+.DS_Store
+
+# Generated Files
 buildresults/
 clang_format.patch
+
+########################
+# C / C++ Ignore Rules #
+########################
+
+# Prerequisites
+*.d
+
+# Compiled Object Files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
