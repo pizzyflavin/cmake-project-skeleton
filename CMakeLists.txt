@@ -57,57 +57,6 @@ function(target_linker_map target)
 endfunction()
 
 #####################
-# Printf Dependency #
-#####################
-
-CPMAddPackage(
-  NAME printf
-  GITHUB_REPOSITORY mpaland/printf
-  VERSION 4.0.0
-  DOWNLOAD_ONLY
-)
-
-add_library(printf INTERFACE)
-target_sources(printf INTERFACE ${printf_SOURCE_DIR}/printf.c)
-target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
-
-if(PROJECTVARNAME_TESTING_IS_ENABLED)
-  add_executable(printf_tests)
-  target_sources(printf_tests PRIVATE ${printf_SOURCE_DIR}/test/test_suite.cpp)
-  target_include_directories(printf_tests PRIVATE ${printf_SOURCE_DIR})
-  install(FILES ${printf_SOURCE_DIR}/printf.h DESTINATION include)
-  set_target_properties(printf_tests PROPERTIES CXX_STANDARD 11)
-  target_linker_map(printf_tests)
-
-  # Re-build + execute tests, printing test information to the console instead of the XML file
-  add_custom_target(test-printf printf_tests)
-
-  add_test(NAME Printf.Test
-    COMMAND printf_tests -s -r junit -o ${CMAKE_BINARY_DIR}/printf_tests.xml
-  )
-endif()
-
-#######################
-# Openlibm Dependency #
-#######################
-
-CPMAddPackage(
-  NAME openlibm
-  GITHUB_REPOSITORY JuliaMath/openlibm
-  VERSION 0.7.0
-  DOWNLOAD_ONLY
-)
-
-add_library(openlibm INTERFACE)
-target_include_directories(openlibm SYSTEM INTERFACE
-   ${openlibm_SOURCE_DIR}/src
-   ${openlibm_SOURCE_DIR}/include
-)
-
-install(DIRECTORY ${openlibm_SOURCE_DIR}/include/ DESTINATION include)
-install(DIRECTORY ${openlibm_SOURCE_DIR}/src DESTINATION include FILES_MATCHING PATTERN "*.h")
-
-#####################
 # CMocka Dependency #
 #####################
 
@@ -180,7 +129,7 @@ endif()
 # Process Source Tree #
 #######################
 
-#add_subdirectory(src)
+add_subdirectory(src)
 
 #####################
 # Process Test Tree #
@@ -254,13 +203,13 @@ if(ENABLE_COVERAGE)
     setup_target_for_coverage_gcovr_xml(
         NAME coverage-xml
         EXECUTABLE ctest
-        DEPENDENCIES libc_tests printf_tests
+        DEPENDENCIES MYPROJECT_tests
     )
 
     setup_target_for_coverage_gcovr_html(
         NAME coverage-html
         EXECUTABLE ctest
-        DEPENDENCIES libc_tests printf_tests
+        DEPENDENCIES MYPROJECT_tests
     )
 
     add_custom_target(coverage
