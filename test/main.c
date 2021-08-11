@@ -1,6 +1,6 @@
 /*
  * Copyright © YEAR ORGANIZATION
- * License: MIT. See LICENSE file for details.
+ * See LICENSE file for details.
  */
 
 // CMocka needs these
@@ -11,7 +11,7 @@
 #include <cmocka.h>
 // clang-format on
 
-#include <tests.h>
+#include "tests.h"
 
 int main(void)
 {
@@ -20,9 +20,8 @@ int main(void)
     // Generate JUnit results
     cmocka_set_message_output(CM_OUTPUT_XML);
 
-    overall_result |= ctype_tests();
-    overall_result |= string_tests();
-    overall_result |= stdlib_tests();
+    overall_result = test_suite();
 
     return overall_result;
 }
+

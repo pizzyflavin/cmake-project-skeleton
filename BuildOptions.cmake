@@ -33,7 +33,7 @@ option(DISABLE_STACK_PROTECTION
 option(NOSTDINC_FOR_DEPENDENTS
     "Disable the -nostdinc flag when using the libc depenendency."
     OFF)
-CMAKE_DEPENDENT_OPTION(LIBC_BUILD_TESTING
+CMAKE_DEPENDENT_OPTION(PROJECTVARNAME_BUILD_TESTING
     "Enable libc testing even when used as an extrnal project."
     OFF
     "NOT CMAKE_CROSSCOMPILING"
@@ -54,9 +54,9 @@ set(USE_SANITIZER
     "Compile with a sanitizer. Options are: Address, Memory, Undefined, Thrad, 'Address;Undefined'"
 )
 
-if((NOT CMAKE_CROSSCOMPILING) AND BUILD_TESTING AND (LIBC_BUILD_TESTING OR (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)))
-    message("Enabling libc tests.")
-    set(LIBC_TESTING_IS_ENABLED ON CACHE INTERNAL "Logic that sets whether testing is enabled on this project.")
+if((NOT CMAKE_CROSSCOMPILING) AND BUILD_TESTING AND (PROJECTVARNAME_BUILD_TESTING OR (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)))
+    message("Enabling tests.")
+    set(PROJECTVARNAME_TESTING_IS_ENABLED ON CACHE INTERNAL "Logic that sets whether testing is enabled on this project.")
 endif()
 
 if("${ENABLE_LTO}")
