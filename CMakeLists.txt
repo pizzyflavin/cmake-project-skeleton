@@ -7,18 +7,32 @@ project(MYPROJECT
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 set_property(GLOBAL PROPERTY CXX_STANDARD 17)
 
-include(cmake/CPM.cmake)
+#################
+# Build Modules #
+#################
 
-# Only use testing if we're not somebody's subproject!
+# Only use testing if we're not somebody's subproject
 if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) OR PROJECTVARNAME_BUILD_TESTING)
     include(CTest)
 endif()
 
+# Define and process project options
 include(BuildOptions.cmake)
-include(cmake/CheckAndApplyFlags.cmake)
+
+# Dependency manager
+include(cmake/CPM.cmake)
+# Improved functions for checking comiler/linker flag support
+include(cmake/compiler/CheckAndApplyFlags.cmake)
+# Adds a function for generating a linker map
+include(cmake/linker/map.cmake)
+# Overrides add_executable so that linker script dependencies are registered automatically
+include(cmake/linker/AddExecutableWithLinkerScriptDep.cmake)
+# Provides functions to convert ELF files into .bin and .hex
 include(cmake/Conversions.cmake)
-include(cmake/AddExecutableWithLinkerScriptDep.cmake)
+
+include(cmake/format/clang-format.cmake)
 include(Packaging.cmake)
+
 
 ##################
 # Compiler Flags #
@@ -34,28 +48,6 @@ check_c_compiler_flag("-Wno-unknown-pragmas" _Wno_unkonwn_pragmas)
 if(_Wno_unknown_pragmas)
     add_compile_options("-Wno-unknown-pragmas")
 endif()
-
-# This function can be usd to generate a linker map file on an executable target
-# in a compiler-agnostic way (currently supports GCC and Clang compiler families)
-function(target_linker_map target)
-    check_c_linker_flag("-Wl,-Map,test.map" _map1)
-    if("${_map1}")
-        set(GEN_MAP_FILE "-Wl,-Map,")
-    else()
-        check_c_linker_flag("-Wl,-map,test.map" _map2)
-        if("${_map2}")
-            set(GEN_MAP_FILE "-Wl,-map,")
-        else()
-            message("[WARNING] ${CMAKE_C_COMPILER_ID} does not have a defined linker map argument.")
-            return()
-        endif()
-    endif()
-
-    get_target_property(map_dir ${target} BINARY_DIR)
-    target_link_options(${target} PRIVATE ${GEN_MAP_FILE}${map_dir}/${target}.map)
-    set_target_properties(${target} PROPERTIES
-        ADDITIONAL_CLEAN_FILES ${target}.map)
-endfunction()
 
 if(ENABLE_COVERAGE)
     include(cmake/CodeCoverage.cmake)
@@ -126,6 +118,10 @@ if(CLANG_TIDY)
 
     add_custom_target(tidy
         COMMAND tools/clang-tidy.sh ${CMAKE_BINARY_DIR}
+            # Directories to include in analysis
+            "src,test"
+            # File types to include in analysis
+            "*.c,*.cpp"
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
 endif()
@@ -156,19 +152,6 @@ if(DOXYGEN)
     # This property will remove a directory, while add_custom_target BYPRODUCTS
     # will not.
     set_target_properties(libc-docs PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/doc/)
-endif()
-
-find_program(CLANG_FORMAT clang-format)
-if(CLANG_FORMAT)
-    add_custom_target(format
-        COMMAND tools/format.sh
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
-
-    add_custom_target(format-patch
-        COMMAND tools/format-patch.sh
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
 endif()
 
 find_program(LIZARD lizard)
