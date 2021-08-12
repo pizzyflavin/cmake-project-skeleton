@@ -18,21 +18,24 @@ else()
     set(OPTION_DISABLE_BUILTINS_IS_ENABLED False)
 endif()
 
+option(DISABLE_RTTI
+    "Disable runtime type information (RTTI) for C++."
+    OFF)
+option(DISABLE_EXEPTIONS
+    "Disable exception handling for C++."
+    OFF)
+option(ENABLE_PEDANTIC
+    "Enable pedantic compiler warnings."
+    OFF)
+option(ENABLE_PEDANTIC_ERROR
+    "Enable pedantic compiler warnings, and treat them as errors."
+    OFF)
 option(BUILD_WITH_STATIC_ANALYSIS
     "Enable static analysis output when building the project."
-    OFF)
-option(HIDE_UNIMPLEMENTED_C_APIS
-    "Make unimplemented libc functions invisible to the compiler."
-    OFF)
-option(ENABLE_GNU_EXTENSIONS
-    "Enable GNU extensions to the standard libc functions."
     OFF)
 option(DISABLE_STACK_PROTECTION
     "Disable stack smashing protection (-fno-stack-protector)."
     ON)
-option(NOSTDINC_FOR_DEPENDENTS
-    "Disable the -nostdinc flag when using the libc depenendency."
-    OFF)
 CMAKE_DEPENDENT_OPTION(PROJECTVARNAME_BUILD_TESTING
     "Enable libc testing even when used as an extrnal project."
     OFF
@@ -85,11 +88,34 @@ elseif(NOT "${USE_SANITIZER}" STREQUAL "")
     message(FATAL_ERROR "Unsupported value of USE_SANITIZER: ${USE_SANITIZER}")
 endif()
 
+if(DISABLE_RTTI)
+    add_compile_options(-fno-rtti)
+endif()
+
+if(DISABLE_EXEPTIONS)
+    add_compile_options(-fno-exceptions -fno-unwind-tables)
+endif()
+
+if(DISABLE_BUILTINS)
+    add_compile_options(-fno-builtin)
+endif()
+
+if(DISABLE_STACK_PROTECTION)
+    add_compile_options(-fno-stack-protector)
+endif()
+
+if(ENABLE_PEDANTIC)
+    add_compile_options(-pedantic)
+endif()
+
+if(ENABLE_PEDANTIC_ERROR)
+    add_compile_options(-pedantic-error)
+endif()
+
 ##############################################
 # Default Settings for CMake Cache Variables #
 ##############################################
 
-# Set a default build type if none was specified
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")

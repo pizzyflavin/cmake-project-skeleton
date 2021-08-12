@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.17)
-project(Project
-   VERSION 1.0
-   DESCRIPTION "Description"
+project(MYPROJECT
+   VERSION 0.1
+   DESCRIPTION "MYDESCRIPTION"
    LANGUAGES C CXX ASM)
 
 set_property(GLOBAL PROPERTY C_STANDARD 11)
+set_property(GLOBAL PROPERTY CXX_STANDARD 17)
 
 include(cmake/CPM.cmake)
 
@@ -19,11 +20,6 @@ include(cmake/Conversions.cmake)
 include(cmake/AddExecutableWithLinkerScriptDep.cmake)
 include(Packaging.cmake)
 
-if(ENABLE_COVERAGE)
-    include(cmake/CodeCoverage.cmake)
-    append_coverage_compiler_flags()
-endif()
-
 ##################
 # Compiler Flags #
 ##################
@@ -33,9 +29,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   add_compile_options(-Wall -Wextra)
 endif()
 
-##################
-# Linker Flags   #
-##################
+# Set default flags
+check_c_compiler_flag("-Wno-unknown-pragmas" _Wno_unkonwn_pragmas)
+if(_Wno_unknown_pragmas)
+    add_compile_options("-Wno-unknown-pragmas")
+endif()
+
+# This function can be usd to generate a linker map file on an executable target
+# in a compiler-agnostic way (currently supports GCC and Clang compiler families)
 function(target_linker_map target)
     check_c_linker_flag("-Wl,-Map,test.map" _map1)
     if("${_map1}")
@@ -55,6 +56,11 @@ function(target_linker_map target)
     set_target_properties(${target} PROPERTIES
         ADDITIONAL_CLEAN_FILES ${target}.map)
 endfunction()
+
+if(ENABLE_COVERAGE)
+    include(cmake/CodeCoverage.cmake)
+    append_coverage_compiler_flags()
+endif()
 
 #####################
 # CMocka Dependency #
