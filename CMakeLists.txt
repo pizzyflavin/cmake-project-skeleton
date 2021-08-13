@@ -29,6 +29,8 @@ include(cmake/linker/map.cmake)
 include(cmake/linker/AddExecutableWithLinkerScriptDep.cmake)
 # Provides functions to convert ELF files into .bin and .hex
 include(cmake/Conversions.cmake)
+# Enable code coverage analysis support target
+include(cmake/analysis/coverage.cmake)
 
 include(Packaging.cmake)
 
@@ -48,10 +50,6 @@ if(_Wno_unknown_pragmas)
     add_compile_options("-Wno-unknown-pragmas")
 endif()
 
-if(ENABLE_COVERAGE)
-    include(cmake/CodeCoverage.cmake)
-    append_coverage_compiler_flags()
-endif()
 
 #####################
 # CMocka Dependency #
@@ -105,6 +103,8 @@ add_subdirectory(test)
 include(cmake/format/clang-format.cmake)
 # Provides complexity analysis targets
 include(cmake/analysis/complexity.cmake)
+# Defines code coverage analysis targets
+enable_coverage_targets(MYPROJECT_tests)
 
 find_program(DOXYGEN doxygen)
 if(DOXYGEN)
@@ -115,23 +115,5 @@ if(DOXYGEN)
     # This property will remove a directory, while add_custom_target BYPRODUCTS
     # will not.
     set_target_properties(libc-docs PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/doc/)
-endif()
-
-if(ENABLE_COVERAGE)
-    setup_target_for_coverage_gcovr_xml(
-        NAME coverage-xml
-        EXECUTABLE ctest
-        DEPENDENCIES MYPROJECT_tests
-    )
-
-    setup_target_for_coverage_gcovr_html(
-        NAME coverage-html
-        EXECUTABLE ctest
-        DEPENDENCIES MYPROJECT_tests
-    )
-
-    add_custom_target(coverage
-        DEPENDS coverage-xml coverage-html)
-
 endif()
 

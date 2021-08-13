@@ -111,7 +111,7 @@ scan-build:
 
 .PHONY: coverage
 coverage:
-		$(Q) cmake -B $(BUILDRESULTS)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON $(OPTIONS) $(INTERNAL_OPTIONS)
+		$(Q) cmake -B $(BUILDRESULTS)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE_ANALYSIS=ON $(OPTIONS) $(INTERNAL_OPTIONS)
 		$(Q) ninja -C $(BUILDRESULTS)/coverage
 		$(Q) cd $(BUILDRESULTS)/coverage; ctest
 		$(Q) ninja -C $(BUILDRESULTS)/coverage coverage
