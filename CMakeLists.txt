@@ -30,7 +30,6 @@ include(cmake/linker/AddExecutableWithLinkerScriptDep.cmake)
 # Provides functions to convert ELF files into .bin and .hex
 include(cmake/Conversions.cmake)
 
-include(cmake/format/clang-format.cmake)
 include(Packaging.cmake)
 
 
@@ -102,6 +101,11 @@ add_subdirectory(test)
 # Tooling Targets #
 ###################
 
+# Provides clang-format build targets
+include(cmake/format/clang-format.cmake)
+# Provides complexity analysis targets
+include(cmake/analysis/complexity.cmake)
+
 find_program(DOXYGEN doxygen)
 if(DOXYGEN)
     add_custom_target(libc-docs
@@ -111,40 +115,6 @@ if(DOXYGEN)
     # This property will remove a directory, while add_custom_target BYPRODUCTS
     # will not.
     set_target_properties(libc-docs PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/doc/)
-endif()
-
-find_program(LIZARD lizard)
-if(LIZARD)
-    set(LIZARD_BASE_ARGS
-        ${LIZARD}
-        --length 75 # fail when functions longer than this
-        --CCN 10 # fail over this CCN
-        --arguments 10 # fail this arg count
-    )
-
-    set(LIZARD_PATHS ${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_CURRENT_LIST_DIR}/tests)
-
-    add_custom_target(complexity
-        COMMAND
-        ${LIZARD_BASE_ARGS}
-        -w # Only show warnings
-        ${LIZARD_PATHS}
-    )
-
-    add_custom_target(complexity-full
-        COMMAND
-        ${LIZARD_BASE_ARGS}
-        ${LIZARD_PATHS}
-    )
-
-    add_custom_target(complexity-xml
-        COMMAND
-        ${LIZARD_BASE_ARGS}
-        --xml # Generate XML output
-        ${LIZARD_PATHS}
-        # Redirect output to file
-        > ${CMAKE_BINARY_DIR}/complexity.xml
-    )
 endif()
 
 if(ENABLE_COVERAGE)
