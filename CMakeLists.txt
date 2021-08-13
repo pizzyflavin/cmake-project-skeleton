@@ -110,22 +110,8 @@ if(CPPCHECK)
     )
 endif()
 
-find_program(CLANG_TIDY clang-tidy)
-if(CLANG_TIDY)
-    if(BUILD_WITH_STATIC_ANALYSIS)
-        set(CMAKE_C_CLANG_TIDY ${CLANG_TIDY})
-    endif()
-
-    add_custom_target(tidy
-        COMMAND tools/clang-tidy.sh ${CMAKE_BINARY_DIR}
-            # Directories to include in analysis
-            "src,test"
-            # File types to include in analysis
-            "*.c,*.cpp"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
-endif()
-
+# Provides clang-tidy targets and an option to compile with clang-tidy analysis
+include(cmake/analysis/clang-tidy.cmake)
 
 #######################
 # Process Source Tree #

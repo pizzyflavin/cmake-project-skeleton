@@ -61,7 +61,7 @@ if(CLANG_FORMAT)
         COMMAND ${CMAKE_CURRENT_LIST_DIR}/format.sh
             # Common args
             ${clang_format_args}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 
     add_custom_target(format-patch
@@ -70,7 +70,7 @@ if(CLANG_FORMAT)
             -p
             # Common args
             ${clang_format_args}
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 else()
     message("[WARNING] Clang-format is not installed. Formatting targets are disabled.")
