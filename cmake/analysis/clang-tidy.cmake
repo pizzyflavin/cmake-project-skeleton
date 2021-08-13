@@ -30,6 +30,7 @@
 #       include(cmake/analysis/clang-tidy.cmake)
 
 find_program(CLANG_TIDY clang-tidy)
+
 if(CLANG_TIDY)
     option(BUILD_WITH_CLANG_TIDY_ANALYSIS
         "Compile the project with clang-tidy support."

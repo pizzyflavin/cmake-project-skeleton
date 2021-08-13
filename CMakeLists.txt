@@ -81,35 +81,8 @@ endif()
 # Enable Static Analysis #
 ##########################
 
-find_program(CPPCHECK cppcheck)
-if(CPPCHECK)
-    set(CPPCHECK_DEFAULT_ARGS
-        ${CPPCHECK} --quiet --enable=style --force
-        # Include directories
-        -I ${CMAKE_CURRENT_LIST_DIR}/include
-    )
-
-    if(BUILD_WITH_STATIC_ANALYSIS)
-        set(CMAKE_C_CPPCHECK ${CPPCHECK_DEFAULT_ARGS})
-    endif()
-
-    add_custom_target(cppcheck
-        COMMAND ${CPPCHECK_DEFAULT_ARGS}
-            # Source directories
-            ${CMAKE_CURRENT_LIST_DIR}/src/ ${CMAKE_CURRENT_LIST_DIR}/target/
-    )
-
-    add_custom_target(cppcheck-xml
-        COMMAND ${CPPCHECK_DEFAULT_ARGS}
-            # Enable XML output
-            --xml --xml-version=2
-            # Source directories
-            ${CMAKE_CURRENT_LIST_DIR}/src/ ${CMAKE_CURRENT_LIST_DIR}/target/
-            # Redirect to file
-            2>${CMAKE_BINARY_DIR}/cppcheck.xml
-    )
-endif()
-
+# Provides cppcheck targets and an option to compile with cppcheck analysis
+include(cmake/analysis/cppcheck.cmake)
 # Provides clang-tidy targets and an option to compile with clang-tidy analysis
 include(cmake/analysis/clang-tidy.cmake)
 

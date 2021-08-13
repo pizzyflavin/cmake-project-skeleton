@@ -50,13 +50,16 @@ if(CLANG_FORMAT)
         string(REPLACE ";" "," CLANG_FORMAT_EXCLUDE_ARG "${CLANG_FORMAT_EXCLUDE_DIRS}")
         SET(CLANG_FORMAT_EXCLUDE_ARG "-e ${CLANG_FORMAT_EXCLUDE_ARG}")
     endif()
+
     string(REPLACE ";" "," CLANG_FORMAT_DIRS_ARG "${CLANG_FORMAT_DIRS}")
     string(REPLACE ";" "," CLANG_FORMAT_FILETYPES_ARG "${CLANG_FORMAT_FILETYPES}")
+
     set(clang_format_args
         ${CLANG_FORMAT_EXCLUDE_ARG}
         ${CLANG_FORMAT_DIRS_ARG}
         ${CLANG_FORMAT_FILETYPES_ARG}
     )
+
     add_custom_target(format
         COMMAND ${CMAKE_CURRENT_LIST_DIR}/format.sh
             # Common args
