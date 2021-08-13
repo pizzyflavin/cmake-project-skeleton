@@ -31,9 +31,15 @@ include(cmake/linker/AddExecutableWithLinkerScriptDep.cmake)
 include(cmake/Conversions.cmake)
 # Enable code coverage analysis support target
 include(cmake/analysis/coverage.cmake)
+# Enable code sanitizer build support
+include(cmake/analysis/sanitizers.cmake)
+
+# Enable CMocka support if testing is enabled
+if(PROJECTVARNAME_TESTING_IS_ENABLED)
+    include(cmake/test/cmocka.cmake)
+endif()
 
 include(Packaging.cmake)
-
 
 ##################
 # Compiler Flags #
@@ -48,30 +54,6 @@ endif()
 check_c_compiler_flag("-Wno-unknown-pragmas" _Wno_unkonwn_pragmas)
 if(_Wno_unknown_pragmas)
     add_compile_options("-Wno-unknown-pragmas")
-endif()
-
-
-#####################
-# CMocka Dependency #
-#####################
-
-if(PROJECTVARNAME_TESTING_IS_ENABLED)
-    find_package(cmocka QUIET)
-
-    if(NOT cmocka_FOUND)
-      CPMAddPackage(
-        NAME cmocka
-        GIT_REPOSITORY https://git.cryptomilk.org/projects/cmocka.git/
-        VERSION 1.1.5
-        GIT_TAG cmocka-1.1.5
-        OPTIONS
-          "WITH_EXAMPLES OFF"
-          "CMAKE_BUILD_TYPE DEBUG"
-      )
-
-      # Maintain build compatibility between find_package and CMakeLists.txt variants.
-      set(CMOCKA_LIBRARIES cmocka)
-    endif()
 endif()
 
 ##########################

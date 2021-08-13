@@ -63,6 +63,10 @@ default: | $(CONFIGURED_BUILD_DEP)
 test: default
 		$(Q) cd $(BUILDRESULTS); ctest
 
+.PHONY: test-clear-results
+test-clear-results: default
+		$(Q) ninja -C ${BUILDRESULTS} test-clear-results
+
 .PHONY: docs
 docs: | $(CONFIGURED_BUILD_DEP)
 		$(Q) ninja -C $(BUILDRESULTS) docs
