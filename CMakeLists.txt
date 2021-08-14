@@ -87,15 +87,6 @@ include(cmake/format/clang-format.cmake)
 include(cmake/analysis/complexity.cmake)
 # Defines code coverage analysis targets
 enable_coverage_targets(MYPROJECT_tests)
-
-find_program(DOXYGEN doxygen)
-if(DOXYGEN)
-    add_custom_target(libc-docs
-        COMMAND ${DOXYGEN} docs/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
-    # This property will remove a directory, while add_custom_target BYPRODUCTS
-    # will not.
-    set_target_properties(libc-docs PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/doc/)
-endif()
+# Provides Doxygen documentation generation target
+include(cmake/documentation/doxygen.cmake)
 
