@@ -39,22 +39,12 @@ if(PROJECTVARNAME_TESTING_IS_ENABLED)
     include(cmake/test/cmocka.cmake)
 endif()
 
+# Specifies default compiler flags for the project
+include(cmake/compiler/DefaultCompilerSettings.cmake)
+# Specifies default linker flags for the project
+include(cmake/linker/DefaultLinkerSettings.cmake)
+
 include(Packaging.cmake)
-
-##################
-# Compiler Flags #
-##################
-
-# If we're not a subproject, globally apply our warning flags
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  add_compile_options(-Wall -Wextra)
-endif()
-
-# Set default flags
-check_c_compiler_flag("-Wno-unknown-pragmas" _Wno_unkonwn_pragmas)
-if(_Wno_unknown_pragmas)
-    add_compile_options("-Wno-unknown-pragmas")
-endif()
 
 ##########################
 # Enable Static Analysis #

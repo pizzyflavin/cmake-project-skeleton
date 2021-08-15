@@ -44,10 +44,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY   ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE   ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE   ONLY)
 
-# Test compiles will use static libraries, so we won' tneed to define linker
-# flags and scripts for linking to succed
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-
 ################
 # Common Flags #
 ################
