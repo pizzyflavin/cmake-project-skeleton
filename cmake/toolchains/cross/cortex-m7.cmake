@@ -9,7 +9,7 @@ if(NOT CPU_NAME)
     set(CPU_NAME cortex-m7)
 endif()
 
-set(CPU_FLAGS "-mcpu=cortex-m7 -mthumb ${CPU_FLAGS}")
+set(CPU_FLAGS "-mcpu=cortex-m7 -mthumb --specs=nosys.specs --specs=nano.specs ${CPU_FLAGS}")
 set(VFP_FLAGS "-mfloat-abi=hard -mfpu=fpv4-sp-d16 ${VFP_FLAGS}")
 
 # Include arm-none-eabi base file
