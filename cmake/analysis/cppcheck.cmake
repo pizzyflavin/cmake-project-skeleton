@@ -29,6 +29,50 @@ find_program(CPPCHECK cppcheck)
 
 if(CPPCHECK)
 
+    if(NOT CPPCHECK_ENABLE_CHECKS)
+        set(CPPCHECK_ENABLE_CHECKS style CACHE
+            STRING "Value to pass to the CppCheck --enable= flag")
+    endif()
+
+    if(CPPCHECK_INCLUDE_DIRS)
+        foreach(dir ${CPPCHECK_INCLUDE_DIRS})
+            list(APPEND CPPCHECK_INCLUDE_DIRS_ARG -I ${dir})
+        endforeach()
+    endif()
+
+    if(CPPCHECK_EXCLUDES)
+        foreach(exclude ${CPPCHECK_EXCLUDES})
+            list(APPEND CPPCHECK_EXCLUDE_ARG -i ${exclude})
+        endforeach()
+    endif()
+
+    ### Custom Rules
+    if(NOT CPPCHECK_CUSTOM_RULES)
+        set(CPPCHECK_CUSTOM_RULES
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/CollapsibleIfStatements/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/EmptyElseBlock/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/EmptyDoWhileStatement/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/EmptyForStatement/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/EmptyIfStatement/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/EmptySwitchStatement/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/ForLoopShouldBeWhileLoop/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/InvertedLogic/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/MultipleUnaryOperator/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/RedundantConditionalOperator/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/RedundantIfStatement/rule.xml
+                ${CMAKE_CURRENT_LIST_DIR}/cppcheck-rules/UnnecessaryElseStatement/rule.xml
+            CACHE STRING "Custom rule files to use with CppCheck")
+    endif()
+
+    if(CPPCHECK_ADDITIONAL_CUSTOM_RULES)
+        list(APPEND CPPCHECK_CUSTOM_RULES ${CPPCHECK_ADDITIONAL_CUSTOM_RULES})
+    endif()
+
+    foreach(rule ${CPPCHECK_CUSTOM_RULES})
+        list(APPEND CPPCHECK_CUSTOM_RULES_ARG --rule-file=${rule})
+    endforeach()
+
+    ### Static analysis build option
     option(BUILD_WITH_CPPCHECK_ANALYSIS
         "Compile the project with cppcheck support."
         OFF)
@@ -48,30 +92,15 @@ if(CPPCHECK)
         list(APPEND CPPCHECK_DIRS ${CPPCHECK_ADDITIONAL_DIRS})
     endif()
 
-    if(NOT CPPECHECK_ENABLE_CHECKS)
-        set(CPPECHECK_ENABLE_CHECKS style CACHE
-            STRING "Value to pass to the CppCheck --enable= flag")
-    endif()
-
-    if(CPPCHECK_INCLUDE_DIRS)
-        foreach(dir ${CPPCHECK_INCLUDE_DIRS})
-            list(APPEND CPPCHECK_INCLUDE_DIRS_ARG -I ${dir})
-        endforeach()
-    endif()
-
-    if(CPPCHECK_EXCLUDES)
-        foreach(exclude ${CPPCHECK_EXCLUDES})
-            list(APPEND CPPCHECK_EXCLUDE_ARG -i ${exclude})
-        endforeach()
-    endif()
 
     # With CppCheck, default arguments are shared between the analysis-during-build
     # configuration and with the cppcheck build targets
     set(CPPCHECK_DEFAULT_ARGS
-        --quiet --enable=${CPPECHECK_ENABLE_CHECKS} --force
+        --quiet --enable=${CPPCHECK_ENABLE_CHECKS} --force
         # Include directories
         ${CPPCHECK_INCLUDE_DIRS_ARG}
         ${CPPCHECK_EXCLUDE_ARG}
+        ${CPPCHECK_CUSTOM_RULES_ARG}
     )
 
 
