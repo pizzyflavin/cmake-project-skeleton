@@ -22,4 +22,17 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            //
+            sh 'make distclean'
+        }
+        success {
+            //
+        }
+        failure {
+            //
+        }
+    }
 }
