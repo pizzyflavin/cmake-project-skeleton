@@ -6,10 +6,8 @@ pipeline {
 
         stage("Build") {
             steps {
-                echo "CLeaning..."
-                sh "make distclean"
-
                 echo "Building..."
+                sh "make distclean"
                 sh "make"
             }
         }
@@ -17,6 +15,7 @@ pipeline {
         stage("Test") {
             steps {
                 echo "Testing..."
+                sh "make test"
             }
         }
 
