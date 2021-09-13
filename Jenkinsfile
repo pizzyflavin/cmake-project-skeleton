@@ -22,17 +22,18 @@ pipeline {
             }
         }
     }
-
     post {
+
         always {
-            //
-            sh 'make distclean'
+            echo "Build completed"
         }
+
         success {
-            //
+            echo "Build succeeded"
         }
+
         failure {
-            //
+            echo "Build failed"
         }
     }
 }
