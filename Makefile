@@ -12,8 +12,8 @@ endif
 # This skeleton is built for CMake's Ninja generator
 export CMAKE_GENERATOR=Ninja
 
-BUILDRESULTS ?= buildresults
-CONFIGURED_BUILD_DEP = $(BUILDRESULTS)/build.ninja
+BUILD_DIR ?= build
+CONFIGURED_BUILD_DEP = $(BUILD_DIR)/build.ninja
 
 # Options
 OPTIONS ?=
@@ -57,111 +57,111 @@ all: default
 
 .PHONY: default
 default: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS)
+		$(Q) ninja -C $(BUILD_DIR)
 
 .PHONY: test
 test: default
-		$(Q) cd $(BUILDRESULTS); ctest
+		$(Q) cd $(BUILD_DIR); ctest
 
 .PHONY: test-clear-results
 test-clear-results: default
-		$(Q) ninja -C ${BUILDRESULTS} test-clear-results
+		$(Q) ninja -C $(BUILD_DIR) test-clear-results
 
 .PHONY: docs
 docs: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) docs
+		$(Q) ninja -C $(BUILD_DIR) docs
 
 .PHONY: package
 package: default
-		$(Q) ninja -C $(BUILDRESULTS) package
-		$(Q) ninja -C $(BUILDRESULTS) package_source
+		$(Q) ninja -C $(BUILD_DIR) package
+		$(Q) ninja -C $(BUILD_DIR) package_source
 
 .PHONY: cppcheck
 cppcheck: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) cppcheck
+		$(Q) ninja -C $(BUILD_DIR) cppcheck
 
 .PHONY: cppcheck-xml
 cppcheck-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) cppcheck-xml
+		$(Q) ninja -C $(BUILD_DIR) cppcheck-xml
 
 .PHONY: complexity
 complexity: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) complexity
+		$(Q) ninja -C $(BUILD_DIR) complexity
 
 .PHONY: complexity-xml
 complexity-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) complexity-xml
+		$(Q) ninja -C $(BUILD_DIR) complexity-xml
 
 .PHONY: complexity-full
 complexity-full: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) complexity-full
+		$(Q) ninja -C $(BUILD_DIR) complexity-full
 
 .PHONY: tidy
 tidy: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) tidy
+		$(Q) ninja -C $(BUILD_DIR) tidy
 
 .PHONY: format
 format: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) format
+		$(Q) ninja -C $(BUILD_DIR) format
 
 .PHONY: format-patch
 format-patch: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILDRESULTS) format-patch
+		$(Q) ninja -C $(BUILD_DIR) format-patch
 
 .PHONY: scan-build
 scan-build:
-		$(Q) scan-build cmake -B $(BUILDRESULTS)/scan-build $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) ninja -C $(BUILDRESULTS)/scan-build
+		$(Q) scan-build cmake -B $(BUILD_DIR)/scan-build $(OPTIONS) $(INTERNAL_OPTIONS)
+		$(Q) ninja -C $(BUILD_DIR)/scan-build
 
 .PHONY: coverage
 coverage:
-		$(Q) cmake -B $(BUILDRESULTS)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE_ANALYSIS=ON $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) ninja -C $(BUILDRESULTS)/coverage
-		$(Q) cd $(BUILDRESULTS)/coverage; ctest
-		$(Q) ninja -C $(BUILDRESULTS)/coverage coverage
+		$(Q) cmake -B $(BUILD_DIR)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE_ANALYSIS=ON $(OPTIONS) $(INTERNAL_OPTIONS)
+		$(Q) ninja -C $(BUILD_DIR)/coverage
+		$(Q) cd $(BUILD_DIR)/coverage; ctest
+		$(Q) ninja -C $(BUILD_DIR)/coverage coverage
 
 # Runs whenever the build has not been configured successfully
 $(CONFIGURED_BUILD_DEP):
-		$(Q) cmake -B $(BUILDRESULTS) $(OPTIONS) $(INTERNAL_OPTIONS)
+		$(Q) cmake -B $(BUILD_DIR) $(OPTIONS) $(INTERNAL_OPTIONS)
 
 # Manually reconfigure a target, esp. with new options
 .PHONY: reconfig
 reconfig:
-		$(Q) cmake -B $(BUILDRESULTS) $(OPTIONS) $(INTERNAL_OPTIONS)
+		$(Q) cmake -B $(BUILD_DIR) $(OPTIONS) $(INTERNAL_OPTIONS)
 
 # Run clean command in build directory
 .PHONY: clean
 clean:
-		$(Q) if [ -d "$(BUILDRESULTS)" ]; then ninja -C $(BUILDRESULTS) clean; fi
+		$(Q) if [ -d "$(BUILD_DIR)" ]; then ninja -C $(BUILD_DIR) clean; fi
 
 # Remove all build artifacts, including build directory
 .PHONY: distclean
 distclean:
-		$(Q) rm -rf $(BUILDRESULTS)
+		$(Q) rm -rf $(BUILD_DIR)
 
 .PHONY: help
 help:
 		@echo "usage: make [OPTIONS] <target>"
 		@echo "  Options:"
 		@echo "    > VERBOSE Show verbose output for Make rules. Default 0. Enable with 1."
-		@echo "    > BUILDRESULTS Directory for build results. Default buildresults."
+		@echo "    > BUILD_DIR Directory for build results. Default build."
 		@echo "    > OPTIONS Configuration options to pass to a build. Default empty."
 		@echo "    > LTO Enable LTO builds. Default 0. Enable with 1."
 		@echo "    > CROSS Enable a Cross-compilation build. "
-		@echo "			Pass the cross-compilation toolchain name without a path or extension."
-		@echo "		Example: make CROSS=cortex-m3"
-		@echo "			For supported toolchains, see cmake/toolchains/cross/"
+		@echo "             Pass the cross-compilation toolchain name without a path or extension."
+		@echo "             Example: make CROSS=cortex-m3"
+		@echo "             For supported toolchains, see cmake/toolchains/cross/"
 		@echo "    > CPM_CACHE Specify the path to the CPM source cache."
-		@echo "			Set the variable to an empty value to disable the cache."
+		@echo "             Set the variable to an empty value to disable the cache."
 		@echo "    > BUILD_TYPE Specify the build type (default: RelWithDebInfo)"
-		@echo "			Options: Debug Release MinSizeRel RelWithDebInfo"
+		@echo "             Options: Debug Release MinSizeRel RelWithDebInfo"
 		@echo "    > NATIVE Use an alternate toolchain on your build machine."
-		@echo "			Pass the toolchain name without a path or extension."
-		@echo "			Example: make NATIVE=gcc-9"
-		@echo "			For supported toolchains, see cmake/toolchains/native/"
+		@echo "             Pass the toolchain name without a path or extension."
+		@echo "             Example: make NATIVE=gcc-9"
+		@echo "             For supported toolchains, see cmake/toolchains/native/"
 		@echo "    > SANITIZER Compile with support for a Clang/GCC Sanitizer.."
-		@echo "			Options: none (default), address, thread, undefined,"
-		@echo "			leak, and 'address;undefined' as a combined option"
+		@echo "             Options: none (default), address, thread, undefined,"
+		@echo "             leak, and 'address;undefined' as a combined option"
 		@echo "Targets:"
 		@echo "  default: Builds all default targets ninja knows about"
 		@echo "  test: Build and run unit test program"
