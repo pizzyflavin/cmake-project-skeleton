@@ -3,19 +3,46 @@ VERBOSE ?= 0
 
 ifeq ($(VERBOSE),1)
 export Q :=
+export Q_CMAKE :=
 export VERBOSE := 1
 else
 export Q := @
+export Q_CMAKE := -- --quiet
+
 export VERBOSE := 0
 endif
 
-# This skeleton is built for CMake's Ninja generator
-export CMAKE_GENERATOR=Ninja
+###########################
+# Generator Configuration #
+###########################
 
-BUILD_DIR ?= build
-CONFIGURED_BUILD_DEP = $(BUILD_DIR)/build.ninja
+BUILD_DIR ?= ./build/
 
-# Options
+# If already successfully configured as Ninja
+ifneq ("$(wildcard $(BUILD_DIR)/build.ninja)","")
+	CMAKE_GENERATOR = Ninja
+# Or if successfully configured as Unix Makefiles
+else ifneq ("$(wildcard $(BUILD_DIR)/Makefile)","")
+	CMAKE_GENERATOR = Unix Makefiles
+# Else if not yet configured
+else
+	# Ninja unless otherwise specified
+	CMAKE_GENERATOR ?= Ninja
+endif
+
+export CMAKE_GENERATOR
+
+ifeq ($(CMAKE_GENERATOR),Ninja)
+	CONFIGURED_BUILD_DEP = $(BUILD_DIR)/build.ninja
+else ifeq ($(CMAKE_GENERATOR),Unix Makefiles)
+	CONFIGURED_BUILD_DEP = $(BUILD_DIR)/Makefile
+endif
+
+
+###########
+# Options #
+###########
+
 OPTIONS ?=
 INTERNAL_OPTIONS =
 
@@ -57,7 +84,7 @@ all: default
 
 .PHONY: default
 default: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR)
+		$(Q) cmake --build $(BUILD_DIR) $(Q_CMAKE)
 
 .PHONY: test
 test: default
@@ -65,60 +92,60 @@ test: default
 
 .PHONY: test-clear-results
 test-clear-results: default
-		$(Q) ninja -C $(BUILD_DIR) test-clear-results
+		$(Q) cmake --build $(BUILD_DIR) --target test-clear-results $(Q_CMAKE)
 
 .PHONY: docs
 docs: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) docs
+		$(Q) cmake --build $(BUILD_DIR) --target docs $(Q_CMAKE)
 
 .PHONY: package
 package: default
-		$(Q) ninja -C $(BUILD_DIR) package
-		$(Q) ninja -C $(BUILD_DIR) package_source
+		$(Q) cmake --build $(BUILD_DIR) --target package $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target package_source $(Q_CMAKE)
 
 .PHONY: cppcheck
 cppcheck: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) cppcheck
+		$(Q) cmake --build $(BUILD_DIR) --target cppcheck $(Q_CMAKE)
 
 .PHONY: cppcheck-xml
 cppcheck-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) cppcheck-xml
+		$(Q) cmake --build $(BUILD_DIR) --target cppcheck-xml $(Q_CMAKE)
 
 .PHONY: complexity
 complexity: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) complexity
+		$(Q) cmake --build $(BUILD_DIR) --target complexity $(Q_CMAKE)
 
 .PHONY: complexity-xml
 complexity-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) complexity-xml
+		$(Q) cmake --build $(BUILD_DIR) --target complexity-xml $(Q_CMAKE)
 
 .PHONY: complexity-full
 complexity-full: | $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) complexity-full
+		$(Q) cmake --build $(BUILD_DIR) --target complexity-full $(Q_CMAKE)
 
 .PHONY: tidy
 tidy: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) tidy
+		$(Q) cmake --build $(BUILD_DIR) --target tidy $(Q_CMAKE)
 
 .PHONY: format
 format: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) format
+		$(Q) cmake --build $(BUILD_DIR) --target format $(Q_CMAKE)
 
 .PHONY: format-patch
 format-patch: $(CONFIGURED_BUILD_DEP)
-		$(Q) ninja -C $(BUILD_DIR) format-patch
+		$(Q) cmake --build $(BUILD_DIR) --target format-patch $(Q_CMAKE)
 
 .PHONY: scan-build
 scan-build:
 		$(Q) scan-build cmake -B $(BUILD_DIR)/scan-build $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) ninja -C $(BUILD_DIR)/scan-build
+		$(Q) cmake --build $(BUILD_DIR)/scan-build $(Q_CMAKE)
 
 .PHONY: coverage
 coverage:
 		$(Q) cmake -B $(BUILD_DIR)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE_ANALYSIS=ON $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) ninja -C $(BUILD_DIR)/coverage
+		$(Q) cmake --build $(BUILD_DIR)/coverage $(Q_CMAKE)
 		$(Q) cd $(BUILD_DIR)/coverage; ctest
-		$(Q) ninja -C $(BUILD_DIR)/coverage coverage
+		$(Q) cmake --build $(BUILD_DIR)/coverage --target coverage $(Q_CMAKE)
 
 # Runs whenever the build has not been configured successfully
 $(CONFIGURED_BUILD_DEP):
@@ -132,7 +159,7 @@ reconfig:
 # Run clean command in build directory
 .PHONY: clean
 clean:
-		$(Q) if [ -d "$(BUILD_DIR)" ]; then ninja -C $(BUILD_DIR) clean; fi
+		$(Q) if [ -d "$(BUILD_DIR)" ]; then cmake --build $(BUILD_DIR) --target clean $(Q_CMAKE)
 
 # Remove all build artifacts, including build directory
 .PHONY: distclean
@@ -144,7 +171,7 @@ help:
 		@echo "usage: make [OPTIONS] <target>"
 		@echo "  Options:"
 		@echo "    > VERBOSE Show verbose output for Make rules. Default 0. Enable with 1."
-		@echo "    > BUILD_DIR Directory for build results. Default build."
+		@echo "    > BUILD_DIR Directory for build results, relative to proj root. Default build."
 		@echo "    > OPTIONS Configuration options to pass to a build. Default empty."
 		@echo "    > LTO Enable LTO builds. Default 0. Enable with 1."
 		@echo "    > CROSS Enable a Cross-compilation build. "
@@ -163,7 +190,7 @@ help:
 		@echo "             Options: none (default), address, thread, undefined,"
 		@echo "             leak, and 'address;undefined' as a combined option"
 		@echo "Targets:"
-		@echo "  default: Builds all default targets ninja knows about"
+		@echo "  default: Builds all default targets build system knows about"
 		@echo "  test: Build and run unit test program"
 		@echo "  test-clear-results: Remove XML file generated by unit test program"
 		@echo "  docs: Generate documentation"
