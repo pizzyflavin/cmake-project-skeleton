@@ -16,7 +16,7 @@ endif
 # Generator Configuration #
 ###########################
 
-BUILD_DIR ?= ./build/
+BUILD_DIR ?= build
 
 # If already successfully configured as Ninja
 ifneq ("$(wildcard $(BUILD_DIR)/build.ninja)","")

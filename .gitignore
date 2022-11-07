@@ -2,7 +2,7 @@
 .DS_Store
 
 # Generated Files
-buildresults/
+build/
 clang_format.patch
 
 ########################
