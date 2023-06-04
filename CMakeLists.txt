@@ -36,7 +36,7 @@ include(cmake/analysis/sanitizers.cmake)
 
 # Enable CMocka support if testing is enabled
 if(PROJECTVARNAME_TESTING_IS_ENABLED)
-    include(cmake/test/cmocka.cmake)
+    include(cmake/test/cpputest.cmake)
 endif()
 
 # Specifies default compiler flags for the project
