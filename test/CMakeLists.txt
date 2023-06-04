@@ -1,19 +1,29 @@
 if(PROJECTVARNAME_TESTING_IS_ENABLED)
-    add_executable(MYPROJECT_tests)
-    target_include_directories(MYPROJECT_tests PRIVATE .)
-    target_link_libraries(MYPROJECT_tests PRIVATE cmocka_dep)
-    target_sources(MYPROJECT_tests PRIVATE
-        main.c
-        test_suite.c
-    )
-    target_linker_map(MYPROJECT_tests)
+    add_executable(example_tests)
 
-    list(APPEND desired_MYPROJECT_tests_flags
-        "-Wno-unused-parameter"
+    target_include_directories(example_tests PRIVATE .)
+    target_link_libraries(example_tests PRIVATE
+        CppUTest::CppUTest
+        CppUTest::CppUTestExt
     )
-    apply_supported_compiler_flags(C MYPROJECT_tests PRIVATE desired_MYPROJECT_tests_flags)
+    target_linker_map(example_tests)
+    target_sources(example_tests PRIVATE
+        main.cpp
+        example_tests.cpp
+    )
 
-    # This registers teh test and defines testing targets
-    register_cmocka_test(MYPROJECT.Test MYPROJECT_tests)
+    add_test(NAME Example.Test
+        COMMAND example_tests
+    )
+
+    #target_linker_map(MYPROJECT_tests)
+
+    #list(APPEND desired_MYPROJECT_tests_flags
+    #    "-Wno-unused-parameter"
+    #)
+    #apply_supported_compiler_flags(C MYPROJECT_tests PRIVATE desired_MYPROJECT_tests_flags)
+
+    ## This registers the test and defines testing targets
+    ##register_cmocka_test(MYPROJECT.Test MYPROJECT_tests)
 endif(PROJECTVARNAME_TESTING_IS_ENABLED)
 
