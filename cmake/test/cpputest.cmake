@@ -25,30 +25,19 @@ endif()
 ######################
 # Satisfy Dependency #
 ######################
-#find_package(cpputest QUIET)
 
-#if(NOT cpputest_FOUND)
-#    CPMAddPackage(
-#        NAME CppUTest
-#        GIT_REPOSITORY https://github.com/cpputest/cpputest.git
-#        VERSION 4.0
-#        GIT_TAG v4.0
-#        DOWNLOAD_ONLY YES
-#    )
-#endif()
+find_package(CppUTest)
 
-# CppUTest
-include(FetchContent)
-FetchContent_Declare(
-    CppUTest
-    GIT_REPOSITORY https://github.com/cpputest/cpputest.git
-    GIT_TAG        master # or use release tag, eg. v4.0
-)
-# Set this to ON if you want to have the CppUTests in your project as well.
-set(TESTS OFF CACHE BOOL "Switch off CppUTest Test build")
-FetchContent_MakeAvailable(CppUTest)
-
-
+if(NOT CppUTest_FOUND)
+    set(TESTS OFF CACHE BOOL "Switch off CppUTest Test build")
+    CPMAddPackage(
+        NAME CppUTest
+        GIT_REPOSITORY https://github.com/cpputest/cpputest.git
+        VERSION 4.0
+        GIT_TAG v4.0
+    )
+set(CppUTest_LIBRARIES CppUTest)
+endif()
 
 ##################################
 # Register CppUTest test targets #

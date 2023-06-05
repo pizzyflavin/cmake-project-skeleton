@@ -4,8 +4,7 @@ if(PROJECTVARNAME_TESTING_IS_ENABLED)
     target_include_directories(example_tests PRIVATE .)
     target_link_libraries(example_tests PRIVATE
         example_lib
-        CppUTest::CppUTest
-        CppUTest::CppUTestExt
+        ${CppUTest_LIBRARIES}
     )
     target_linker_map(example_tests)
     target_sources(example_tests PRIVATE
