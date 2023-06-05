@@ -3,12 +3,11 @@ VERBOSE ?= 0
 
 ifeq ($(VERBOSE),1)
 export Q :=
-export Q_CMAKE :=
+export CMAKE_Q :=
 export VERBOSE := 1
 else
 export Q := @
-export Q_CMAKE := -- --quiet
-
+export CMAKE_Q := -- --quiet
 export VERBOSE := 0
 endif
 
@@ -84,7 +83,7 @@ all: default
 
 .PHONY: default
 default: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) $(CMAKE_Q)
 
 .PHONY: test
 test: default
@@ -92,60 +91,60 @@ test: default
 
 .PHONY: test-clear-results
 test-clear-results: default
-		$(Q) cmake --build $(BUILD_DIR) --target test-clear-results $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target test-clear-results
 
 .PHONY: docs
 docs: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target docs $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target docs
 
 .PHONY: package
 package: default
-		$(Q) cmake --build $(BUILD_DIR) --target package $(Q_CMAKE)
-		$(Q) cmake --build $(BUILD_DIR) --target package_source $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target package
+		$(Q) cmake --build $(BUILD_DIR) --target package_source
 
 .PHONY: cppcheck
 cppcheck: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target cppcheck $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target cppcheck
 
 .PHONY: cppcheck-xml
 cppcheck-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target cppcheck-xml $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target cppcheck-xml
 
 .PHONY: complexity
 complexity: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target complexity $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target complexity
 
 .PHONY: complexity-xml
 complexity-xml: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target complexity-xml $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target complexity-xml
 
 .PHONY: complexity-full
 complexity-full: | $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target complexity-full $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target complexity-full
 
 .PHONY: tidy
 tidy: $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target tidy $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target tidy
 
 .PHONY: format
 format: $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target format $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target format
 
 .PHONY: format-patch
 format-patch: $(CONFIGURED_BUILD_DEP)
-		$(Q) cmake --build $(BUILD_DIR) --target format-patch $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR) --target format-patch
 
 .PHONY: scan-build
 scan-build:
 		$(Q) scan-build cmake -B $(BUILD_DIR)/scan-build $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) cmake --build $(BUILD_DIR)/scan-build $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR)/scan-build $(CMAKE_Q)
 
 .PHONY: coverage
 coverage:
 		$(Q) cmake -B $(BUILD_DIR)/coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE_ANALYSIS=ON $(OPTIONS) $(INTERNAL_OPTIONS)
-		$(Q) cmake --build $(BUILD_DIR)/coverage $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR)/coverage $(CMAKE_Q)
 		$(Q) cd $(BUILD_DIR)/coverage; ctest
-		$(Q) cmake --build $(BUILD_DIR)/coverage --target coverage $(Q_CMAKE)
+		$(Q) cmake --build $(BUILD_DIR)/coverage --target coverage
 
 # Runs whenever the build has not been configured successfully
 $(CONFIGURED_BUILD_DEP):
@@ -159,7 +158,7 @@ reconfig:
 # Run clean command in build directory
 .PHONY: clean
 clean:
-		$(Q) if [ -d "$(BUILD_DIR)" ]; then cmake --build $(BUILD_DIR) --target clean $(Q_CMAKE)
+		$(Q) if [ -d "$(BUILD_DIR)" ]; then cmake --build $(BUILD_DIR) --target clean; fi
 
 # Remove all build artifacts, including build directory
 .PHONY: distclean
