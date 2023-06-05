@@ -1,6 +1,9 @@
 # macOS files
 .DS_Store
 
+# Tool caches (clangd)
+.cache/
+
 # Generated Files
 build/
 clang_format.patch
