@@ -1,10 +1,11 @@
-#include "CppUTest/TestHarness.h"
+#include <CppUTest/TestHarness.h>
+#include <CppUTest/UtestMacros.h>
 
 extern "C" {
-    //#include "component.h"
+    #include <example/example.h>
 }
 
-TEST_GROUP(FirstTestGroup)
+TEST_GROUP(ExampleTestGroup)
 {
     void setup()
     {
@@ -17,9 +18,9 @@ TEST_GROUP(FirstTestGroup)
     }
 };
 
-TEST(FirstTestGroup, FirstTest)
+TEST(ExampleTestGroup, ExampleTest1)
 {
-    FAIL("Fail me!");
+    int ret_val = ret42();
+    CHECK_EQUAL(42, ret_val);
 }
-
 

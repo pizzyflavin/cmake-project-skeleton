@@ -3,6 +3,7 @@ if(PROJECTVARNAME_TESTING_IS_ENABLED)
 
     target_include_directories(example_tests PRIVATE .)
     target_link_libraries(example_tests PRIVATE
+        example_lib
         CppUTest::CppUTest
         CppUTest::CppUTestExt
     )
@@ -12,18 +13,13 @@ if(PROJECTVARNAME_TESTING_IS_ENABLED)
         example_tests.cpp
     )
 
-    add_test(NAME Example.Test
-        COMMAND example_tests
+    list(APPEND desired_example_tests_flags
+        "-Wno-old-style-cast"
+        "-Wno-unused-parameter"
     )
+    apply_supported_compiler_flags(CXX example_tests PRIVATE desired_example_tests_flags)
 
-    #target_linker_map(MYPROJECT_tests)
+    register_cpputest_test(Example.Test example_tests)
 
-    #list(APPEND desired_MYPROJECT_tests_flags
-    #    "-Wno-unused-parameter"
-    #)
-    #apply_supported_compiler_flags(C MYPROJECT_tests PRIVATE desired_MYPROJECT_tests_flags)
-
-    ## This registers the test and defines testing targets
-    ##register_cmocka_test(MYPROJECT.Test MYPROJECT_tests)
 endif(PROJECTVARNAME_TESTING_IS_ENABLED)
 

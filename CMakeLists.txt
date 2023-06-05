@@ -34,7 +34,7 @@ include(cmake/analysis/coverage.cmake)
 # Enable code sanitizer build support
 include(cmake/analysis/sanitizers.cmake)
 
-# Enable CMocka support if testing is enabled
+# Enable test suite support if testing is enabled
 if(PROJECTVARNAME_TESTING_IS_ENABLED)
     include(cmake/test/cpputest.cmake)
 endif()

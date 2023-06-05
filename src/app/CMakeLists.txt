@@ -1,6 +1,6 @@
 add_executable(APP)
 target_sources(APP PRIVATE main.c)
-target_link_libraries(APP PRIVATE example utilities)
+target_link_libraries(APP PRIVATE example_lib utilities)
 target_linker_map(APP)
 
 # Apply unconditional private flags here

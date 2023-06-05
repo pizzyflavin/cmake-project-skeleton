@@ -1,2 +1,2 @@
-add_library(example)
-target_sources(example PRIVATE example.c)
+add_library(example_lib)
+target_sources(example_lib PRIVATE example.c)
